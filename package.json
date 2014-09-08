@@ -1,0 +1,20 @@
+{
+  "name": "interface.server.gamepad",
+  "version": "0.0.0",
+  "description": "HID gamepad usage, designed to support interface.server but also working well as a standalone library",
+  "main": "index.js",
+  "dependencies": {
+    "node-hid": "~0.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "HID",
+    "gamepad",
+    "joystick"
+  ],
+  "author": "Charlie Roberts <charlie@charlie-roberts.com> (http://www.charlie-roberts.com/)",
+  "license": "MIT"
+}
