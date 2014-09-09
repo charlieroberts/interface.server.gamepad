@@ -2,9 +2,11 @@ var EventEmitter = require( 'events' ).EventEmitter,
     HID = require( 'node-hid' ),
     util = require( 'util' ),
     fs   = require( 'fs' ),
+    _    = require( 'lodash'),
 
 ISG = {
   devices:null,
+  getDeviceNames: function() { return _.pluck( this.devices, 'product' ) },
   init: function() {
     this.deviceDescriptors = HID.devices()
     this.devices = {}
@@ -23,15 +25,24 @@ ISG = {
         this.uids[ uid ] = 1
       }
       
-      path = './devices/' + device.manufacturer + '/' + uid + '.json'
+      path = './devices/' + device.manufacturer + '/' + uid + '.js'
       hasDescription = fs.existsSync( path )
       
       if( hasDescription ) {
         device = new HID.HID( this.deviceDescriptors[ i ].path )
         device.registered = false
-        device.description = JSON.parse( fs.readFileSync( path ) )
+        device.description = require( path )
         device.emitters = {}
         device.uid = uid + " #" + this.uids[ uid ]
+        device.buttons = _.where( _.map( device.description.outputs, function( val, key, coll ){ 
+          val.name = key
+          return val 
+        }), { type:'button'})
+
+        device.joysticks = _.where( _.map( device.description.outputs, function( val, key, coll ){ 
+          val.name = key
+          return val 
+        }), { type:'joystick'})
 
         this.devices[ device.uid ] = device
       }
@@ -55,54 +66,53 @@ ISG = {
   },
   
   processJoysticks: function( data, device ) {
-    if( ! device.description.joysticks ) {
+    if( ! device.joysticks ) {
       return;
     }
     
-    var joysticks = device.description.joysticks, joystick, currentState, shouldEmitX, shouldEmitY;
+    var joysticks = device.joysticks, joystick, currentState, shouldEmit;
+
     for( var i = 0, len = joysticks.length; i < len; i++ ) {
       joystick = joysticks[ i ];
       if( ! device.states[ joystick.name ] ) {
-        device.states[ joystick.name ] = {
-          X : data[ joystick.X.pin ],
-          Y : data[ joystick.Y.pin ]
-        };
+        device.states[ joystick.name ] = data[ joystick.pin ]
+          //X : data[ joystick.X.pin ],
+          //Y : data[ joystick.Y.pin ]
         continue;
       }
 
       currentState = device.states[ joystick.name ];
-      shouldEmitX = ( currentState.X !== data[ joystick.X.pin ] ) && device.emitters[ joystick.name + 'X' ]
-      shouldEmitY = ( currentState.Y !== data[ joystick.Y.pin ] ) && device.emitters[ joystick.name + 'Y' ]
+      shouldEmit =  currentState !== data[ joystick.pin ] && device.emitters[ joystick.name ]
       
-      if( shouldEmitX ) {
-        device.states[ joystick.name ].X = data[ joystick.X.pin ]
-        device.emit( joystick.name + 'X', device.states[ joystick.name ].X );  
-      }
-      if( shouldEmitY ) {
-        device.states[ joystick.name ].Y = data[ joystick.Y.pin ]
-        device.emit( joystick.name + 'Y', device.states[ joystick.name ].Y );
+      if( shouldEmit ) {
+        device.states[ joystick.name ] = data[ joystick.pin ]
+        device.emit( joystick.name, device.states[ joystick.name ] );  
       }
     }
   },
   
   processButtons : function( data, device ) {
-    if ( !device.description.buttons ) {
+    if ( !device.buttons ) {
       return;
     }
 
-    var buttons = device.description.buttons,
+    var buttons = device.buttons,
         button, isPressed, currentState, shouldEmit;
     for (var i = 0, len = buttons.length; i < len; i++) {
       button = buttons[ i ]
       shouldEmit = device.emitters[ button.name ]
       
+      //console.log( button.name, shouldEmit, button )
+      
       if( shouldEmit ) {
       
-        isPressed = ( data[ button.pin ] & 0xff) === button.value
-      
+        isPressed = ( data[ button.pin ] & 0xff) === button.pinValue
+        
+        //console.log( button.name, isPressed, button.pin, button.pinValue, data[ button.pin ] )
+        
         if ( typeof device.states[ button.name ] === 'undefined' ) {
           device.states[ button.name ] = isPressed ? 1 : 0
-          if (isPressed) {
+          if ( isPressed ) {
             device.emit( button.name, isPressed ? 1 : 0 );
           }
 
@@ -111,7 +121,7 @@ ISG = {
       
         currentState = device.states[ button.name ];
 
-        if (isPressed && currentState !== isPressed) {
+        if ( isPressed && currentState !== isPressed ) {
           device.emit( button.name, isPressed ? 1 : 0);
         } else if (!isPressed && currentState !== isPressed) {
           device.emit( button.name, isPressed ? 1 : 0);

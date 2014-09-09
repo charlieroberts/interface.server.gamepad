@@ -14,5 +14,5 @@ ISG.register( 'Mega World/USB 2-Axis 8-Button Gamepad #1', 'leftX', function(d){
 
 ISG.register( 'Logitech Dual Action #1', 'leftX', function(d){console.log("dual action X", d)} )
 
-ISG.register( 'Logitech Dual Action #1', 'button6', function(d){console.log("dual action X", d)} )
+ISG.register( 'Logitech Dual Action #1', 'button1', function(d){console.log("dual action button1", d)} )
 
