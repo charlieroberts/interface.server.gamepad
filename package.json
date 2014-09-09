@@ -1,14 +1,15 @@
 {
   "name": "interface.server.gamepad",
   "version": "0.0.0",
-  "description": "HID gamepad usage, designed to support interface.server but also working well as a standalone library",
+  "description": "HID gamepad usage, designed to support interface.server but also working as a standalone library",
   "main": "index.js",
   "dependencies": {
-    "node-hid": "~0.3.1"
+    "node-hid": "~0.3.1",
+    "lodash": "~2.4.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Test is setup for Logitech RumblePad 2 USB. Change tests/test.js for use with other joysticks\" && node tests/test.js"
   },
   "keywords": [
     "HID",

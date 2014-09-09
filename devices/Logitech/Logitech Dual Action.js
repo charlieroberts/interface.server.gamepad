@@ -1,6 +1,4 @@
 module.exports = {
-  vendorID: 1133,
-  productID: 49686,
   inputs: {},
   outputs: {
     leftX:  { pin: 0, min:0, max:255, value:127, type:'joystick' },
