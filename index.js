@@ -14,7 +14,7 @@ ISG = {
     
     for( var i = 0; i < this.deviceDescriptors.length; i++ ) {
       var device = this.deviceDescriptors[ i ],
-          uid = device.manufacturer + '/' + device.product,
+          uid = device.product,
           path, hasDescription
       
       if ( typeof this.uids[ uid ] === 'number' ) {
@@ -23,7 +23,7 @@ ISG = {
         this.uids[ uid ] = 1
       }
       
-      path = './devices/' + uid + '.json'
+      path = './devices/' + device.manufacturer + '/' + uid + '.json'
       hasDescription = fs.existsSync( path )
       
       if( hasDescription ) {
@@ -50,7 +50,7 @@ ISG = {
       device.emitters[ eventName ] = true
       device.on( eventName, func )
     }else{
-      console.log( "That device is not currently found or supported by this module.")
+      console.log( _device + ' is not currently found or supported by this module.' )
     }
   },
   
