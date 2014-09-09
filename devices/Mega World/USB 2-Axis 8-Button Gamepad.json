@@ -1,0 +1,48 @@
+{
+  "vendorID": 1133,
+  "productID": 49688,
+  "joysticks": [{
+    "name": "left",
+    "X": {
+      "pin": 0
+    },
+    "Y": {
+      "pin": 1
+    }
+  }],
+  "buttons": [ 
+  {
+    "value": 2,
+    "pin": 2,
+    "name": "button1"
+  }, {
+    "value": 1,
+    "pin": 2,
+    "name": "button2"
+  }, {
+    "value": 4,
+    "pin": 2,
+    "name": "button3"
+  }, {
+    "value": 8,
+    "pin": 2,
+    "name": "button4"
+  }, {
+    "value": 16,
+    "pin": 2,
+    "name": "button5"
+  }, {
+    "value": 64,
+    "pin": 2,
+    "name": "button6"
+  }, {
+    "value": 32,
+    "pin": 2,
+    "name": "button7"
+  }, {
+    "value": 128,
+    "pin": 5,
+    "name": "button8"
+  }
+  ]
+}
