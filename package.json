@@ -17,5 +17,15 @@
     "joystick"
   ],
   "author": "Charlie Roberts <charlie@charlie-roberts.com> (http://www.charlie-roberts.com/)",
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/charlieroberts/interface.server.gamepad.git"
+  },
+  "bugs": {
+    "url": "https://github.com/charlieroberts/interface.server.gamepad/issues"
+  }
 }
