@@ -1,6 +1,6 @@
 {
   "name": "interface.server.gamepad",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "HID gamepad usage, designed to support interface.server but also working as a standalone library",
   "main": "index.js",
   "dependencies": {
