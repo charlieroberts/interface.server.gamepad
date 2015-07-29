@@ -6,6 +6,9 @@ var EventEmitter = require( 'events' ).EventEmitter,
 
 ISG = {
   devices:null,
+  uids:null,
+  deviceDescriptors: null,
+  
   getDeviceNames: function() { return _.pluck( this.devices, 'product' ) },
   init: function() {
     this.deviceDescriptors = HID.devices()
@@ -13,54 +16,82 @@ ISG = {
     this.uids = {}
     
     for( var i = 0; i < this.deviceDescriptors.length; i++ ) {
-      var device = this.deviceDescriptors[ i ],
-          uid = device.product,
-          path, hasDescription
+      var device = this.deviceDescriptors[ i ]
       
-      if ( typeof this.uids[ uid ] === 'number' ) {
-        this.uids[ uid ]++
-      }else{
-        this.uids[ uid ] = 1
-      }
-      
-      path = __dirname + '/devices/' + device.manufacturer + '/' + uid + '.js'
-      hasDescription = fs.existsSync( path )
-      
-      //console.log( uid, hasDescription, path )
-      if( hasDescription ) {
-        device = new HID.HID( this.deviceDescriptors[ i ].path )
-        device.registered = false
-        device.description = require( path )
-        device.emitters = {}
-        device.uid = uid + " #" + this.uids[ uid ]
-        
-        device.buttons = _.where( _.map( device.description.outputs, function( val, key, coll ){ 
-          val.name = key
-          return val 
-        }), { type:'button'})
-
-        device.joysticks = _.where( _.map( device.description.outputs, function( val, key, coll ){ 
-          val.name = key
-          return val 
-        }), { type:'joystick'})
-        
-        device._on = device.on.bind( device )
-        
-        device.on = function( outputName, func ) {
-          ISG.register( this.uid, outputName, func )
-        }
-        
-        device.inputs  = device.description.inputs
-        device.outputs = device.description.outputs
-
-        this.devices[ device.uid ] = device
-        this.emit( 'new device', device.uid, device )
-      }
+      ISG.processDeviceDescription( device )
     }
     
     if( this.onload ) this.onload()
+      
+    ISG.deviceCheckInterval = setInterval( ISG.checkForNewDevices, 2000 )
   },
   
+  processDeviceDescription: function( deviceDesc ) {
+    var uid = deviceDesc.product,
+        path, hasDescription
+    
+    if ( typeof this.uids[ uid ] === 'number' ) {
+      this.uids[ uid ]++
+    }else{
+      this.uids[ uid ] = 1
+    }
+    
+    path = __dirname + '/devices/' + deviceDesc.manufacturer + '/' + uid + '.js'
+    hasDescription = fs.existsSync( path )
+    
+    //console.log( uid, hasDescription, path )
+    if( hasDescription ) {
+      device = new HID.HID( deviceDesc.path )
+      device.registered = false
+      device.description = require( path )
+      device.emitters = {}
+      device.uid = uid + " #" + this.uids[ uid ]
+      
+      device.buttons = _.where( _.map( device.description.outputs, function( val, key, coll ){ 
+        val.name = key
+        return val 
+      }), { type:'button'})
+
+      device.joysticks = _.where( _.map( device.description.outputs, function( val, key, coll ){ 
+        val.name = key
+        return val 
+      }), { type:'joystick'})
+      
+      device._on = device.on.bind( device )
+      
+      device.on = function( outputName, func ) {
+        ISG.register( this.uid, outputName, func )
+      }
+      
+      device.inputs  = device.description.inputs
+      device.outputs = device.description.outputs
+
+      this.devices[ device.uid ] = device
+      this.emit( 'new device', device.uid, device )
+    }
+  },
+  
+  checkForNewDevices: function() {
+    var devices = HID.devices()
+    if( devices.length !== ISG.deviceDescriptors.length ) {
+      if( devices.length > ISG.deviceDescriptors.length ) {
+        for( var d = 0; d < devices.length; d++ ) {
+          var dev = devices[ d ], found = false
+          for( var i = 0; i < ISG.deviceDescriptors.length; i++ ) {
+            if( ISG.deviceDescriptors[ i ].path === dev.path ) {
+              found = true
+              break;
+            }
+          }
+          
+          if( found === false ) {
+            ISG.processDeviceDescription( dev )
+          }
+        }
+      }
+    }
+    ISG.deviceDescriptors = devices
+  },
   register: function( _device, eventName, func ) {
     var device = this.devices[ _device ]
     
