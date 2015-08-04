@@ -118,7 +118,7 @@ ISG = {
 
     for( var i = 0, len = joysticks.length; i < len; i++ ) {
       joystick = joysticks[ i ];
-      if( ! device.states[ joystick.name ] ) {
+      if( typeof device.states[ joystick.name ] === 'undefined' ) {
         device.states[ joystick.name ] = data[ joystick.pin ]
 
         continue;

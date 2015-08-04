@@ -6,13 +6,13 @@ module.exports = {
     rightX: { pin: 8, min:0, max:255, value:127, type:'joystick' },
     rightY: { pin: 9, min:0, max:255, value:127, type:'joystick' },
     
-    dPadLeft:  { pinValue:144, pin: 2, min:0, max:1, value:0, type:'button' },
+    dPadLeft:  { pinValue:128, pin: 2, min:0, max:1, value:0, type:'button' },
     dPadRight: { pinValue:32, pin: 2, min:0, max:1, value:0, type:'button' },   
     dPadDown:  { pinValue:64, pin: 2, min:0, max:1, value:0, type:'button' },
     dPadUp:    { pinValue:16, pin: 2, min:0, max:1, value:0, type:'button' },
     
-    buttonSquare:   { pinValue:144, pin: 3, min:0, max:1, value:0, type:'button' },
-    buttonTriangle: { pinValue:160, pin: 3, min:0, max:1, value:0, type:'button' },
+    buttonSquare:   { pinValue:128, pin: 3, min:0, max:1, value:0, type:'button' },
+    buttonTriangle: { pinValue:16, pin: 3, min:0, max:1, value:0, type:'button' },
     buttonCircle:   { pinValue:32,  pin: 3, min:0, max:1, value:0, type:'button' },
     buttonX:        { pinValue:64,  pin: 3, min:0, max:1, value:0, type:'button' },
     buttonL1:       { pinValue:4,   pin: 3, min:0, max:1, value:0, type:'button' },
